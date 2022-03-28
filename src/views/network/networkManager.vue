@@ -25,16 +25,6 @@
                 myChart: null,
                 chartData:[],
                 chartLink:[],
-                imgList:[
-                    imgSrc1,
-                    imgSrc2,
-                    imgSrc3,
-                    imgSrc4,
-                    imgSrc5,
-                    imgSrc6,
-                    imgSrc7,
-                    imgSrc8
-                ]
             }
         },
         mounted() {
@@ -80,7 +70,7 @@
                                 }
                             },
                             //头像
-                            symbol: `image://${this.imgList[Math.random() * (8 - 1) + 1]}`,
+                            symbol: `image://${imgSrc8}`,
                             symbolSize:60,
                             type:'graph',
                             links: this.chartLink,
@@ -97,7 +87,7 @@
                     response.data.users.forEach((item, i)=>{
                         this.chartData.push({
                             id: item.id,
-                            name: item.username
+                            name: item.name
                         });
                     });
                     response.data.userRelationVOList.forEach((item, i)=>{
