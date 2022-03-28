@@ -9,14 +9,32 @@
 </template>
 
 <script>
-    import imgSrc from '../../static/img/6.jpg'
+    import imgSrc1 from '../../static/img/1.jpg'
+    import imgSrc2 from '../../static/img/2.jpg'
+    import imgSrc3 from '../../static/img/3.jpg'
+    import imgSrc4 from '../../static/img/4.jpg'
+    import imgSrc5 from '../../static/img/5.jpg'
+    import imgSrc6 from '../../static/img/6.jpg'
+    import imgSrc7 from '../../static/img/7.jpg'
+    import imgSrc8 from '../../static/img/8.jpg'
+
     export default {
         name: "networkManager",
         data() {
             return {
                 myChart: null,
                 chartData:[],
-                chartLink:[]
+                chartLink:[],
+                imgList:[
+                    imgSrc1,
+                    imgSrc2,
+                    imgSrc3,
+                    imgSrc4,
+                    imgSrc5,
+                    imgSrc6,
+                    imgSrc7,
+                    imgSrc8
+                ]
             }
         },
         mounted() {
@@ -62,7 +80,7 @@
                                 }
                             },
                             //头像
-                            symbol: `image://${imgSrc}`,
+                            symbol: `image://${this.imgList[Math.random() * (8 - 1) + 1]}`,
                             symbolSize:60,
                             type:'graph',
                             links: this.chartLink,
@@ -79,7 +97,7 @@
                     response.data.users.forEach((item, i)=>{
                         this.chartData.push({
                             id: item.id,
-                            name: item.name
+                            name: item.username
                         });
                     });
                     response.data.userRelationVOList.forEach((item, i)=>{
