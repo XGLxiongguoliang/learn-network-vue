@@ -33,7 +33,7 @@ html, body{
 .divlogin {
     margin: auto;
     margin-top: 50px;
-    margin-left: 720px;
+    margin-left: calc(50% - 250px);
 }
 
 .mynetwork {
