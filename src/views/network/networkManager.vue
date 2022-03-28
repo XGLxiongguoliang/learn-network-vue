@@ -69,9 +69,17 @@
                                     show:true
                                 }
                             },
+                            lineStyle: {
+                                normal: {
+                                    opacity: 0.2,
+                                    width: 2,
+                                    curveness: 0,
+                                    color: 'red'
+                                }
+                            },
                             //头像
                             symbol: `image://${imgSrc8}`,
-                            symbolSize:60,
+                            symbolSize:50,
                             type:'graph',
                             links: this.chartLink,
                             data:this.chartData
