@@ -1,10 +1,21 @@
 <template>
-    <!--<div class="div02">
-        <img style="width: 50px;height: 50px;transform:rotate(0deg)" src="../../static/img/xgl2.png"  alt="me" />
-        <span class="span01">Center关系网</span>
-    </div>-->
     <div class="echartLayout">
-        <div id="container" style="width:100%; height:100%; overflow:hidden;"></div>
+        <div >
+            <el-select
+                    filterable
+                    v-model="key"
+                    @change="selectSomeUserRelation"
+                    placeholder="请选择主角哦！！！">
+                <el-option style="color: blueviolet"
+                           v-for="item in userList"
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
+                </el-option>
+            </el-select>
+        </div>
+        <div id="container" style="width:100%; height:100%; overflow:hidden;">
+        </div>
     </div>
 </template>
 
@@ -25,10 +36,13 @@
                 myChart: null,
                 chartData:[],
                 chartLink:[],
+                userList: [],
+                key: '',
             }
         },
         mounted() {
-            this.selectUserRelation()
+            this.selectAllUserRelation();
+            this.getUserList();
         },
         methods: {
             initEchart() {
@@ -115,7 +129,9 @@
                     //this.myChart.resize();
                 }
             },
-            selectUserRelation() {
+
+            selectAllUserRelation() {
+                this.clearData();
                 this.$api.get('/api/userrelation/getUserRelationListAll').then(response => {
                     response.data.users.forEach((item, i)=>{
                         this.chartData.push({
@@ -133,6 +149,52 @@
                     this.initEchart();
                 })
             },
+
+            getUserList() {
+                this.$api.get('/api/user/getAllUserList').then(response => {
+                    this.userList.push({
+                        key: "",
+                        label: "EveryOne ..."
+                    });
+                    response.data.forEach((item)=>{
+                        this.userList.push({
+                            key: item.id,
+                            label: item.name
+                        });
+                    });
+                })
+            },
+
+            selectSomeUserRelation() {
+                this.clearData();
+
+                if (this.key == "") {
+                    this.selectAllUserRelation();
+                    return;
+                }
+
+                this.$api.post('/api/userrelation/getUserRelationListByUser',this.key).then(response => {
+                    response.data.users.forEach((item, i)=>{
+                        this.chartData.push({
+                            name: item.id + "",
+                            lable: item.name
+                        });
+                    });
+                    response.data.userRelationVOList.forEach((item, i)=>{
+                        this.chartLink.push({
+                            source: item.masterId + "",
+                            target: item.servantId + "",
+                            lable: item.relationName,
+                        });
+                    });
+                    this.initEchart();
+                })
+            },
+
+            clearData() {
+                this.chartData = [];
+                this.chartLink = [];
+            },
         }
     }
 </script>
@@ -141,9 +203,12 @@
     .echartLayout {
         margin: auto;
         position: absolute;
-        top: 10%;
+        top: 6%;
         left: 0;
         bottom: 0;
         right: 0;
+        overflow:scroll;
+        overflow-x:hidden;
+        overflow-y:hidden;
     }
 </style>
