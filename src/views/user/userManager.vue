@@ -132,13 +132,13 @@
                 }).then(res => {
                     let blob = new Blob([res.data], {
                         // 这里一定要和后端对应，不然可能出现乱码或者打不开文件
-                        //type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
-                        type: "application/vnd.ms-excel;charset=utf-8"
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                        //type: "application/vnd.ms-excel;charset=utf-8"
                     });
                     let url = window.URL.createObjectURL(blob);
                     let link = document.createElement('a')
                     link.href = window.URL.createObjectURL(blob)
-                    link.download = "用户列表.xls"
+                    link.download = "用户列表.xlsx"
                     link.click();
                     //释放内存
                     window.URL.revokeObjectURL(link.href)
