@@ -21,12 +21,12 @@
             <el-table-column label="次角色" prop="servantName"></el-table-column>
             <el-table-column label="关系" prop="relationName"></el-table-column>
             <el-table-column width="500">
-                <template slot="header" slot-scope="scope">
+                <template slot="header" slot-scope="{}">
                     <el-input v-model="search" size="mini" style="width:50%;margin-right: 10px" placeholder="输入关键字搜索"/>
                     <el-button type="warning" @click="batchDelete()">批量删除</el-button>
                     <el-button type="success" @click="changeTable()">新增</el-button>
                 </template>
-                <template slot-scope="scope">
+                <template slot-scope="{}">
                     <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
