@@ -58,8 +58,6 @@
     },
     methods: {
       submitForm(formName) {
-        //var data = JSON.stringify(this.ruleForm);
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$api.post('/api/login/login', this.ruleForm).then(response => {

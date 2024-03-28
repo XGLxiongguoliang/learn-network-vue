@@ -1,10 +1,21 @@
 <template>
-    <!--<div class="div02">
-        <img style="width: 50px;height: 50px;transform:rotate(0deg)" src="../../static/img/xgl2.png"  alt="me" />
-        <span class="span01">Center关系网</span>
-    </div>-->
     <div class="echartLayout">
-        <div id="container" style="width:100%; height:100%; overflow:hidden;"></div>
+        <div >
+            <el-select
+                    filterable
+                    v-model="key"
+                    @change="selectSomeUserRelation"
+                    placeholder="请选择主角哦！！！">
+                <el-option style="color: blueviolet"
+                           v-for="item in userList"
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
+                </el-option>
+            </el-select>
+        </div>
+        <div id="container" style="width:100%; height:100%; overflow:hidden;">
+        </div>
     </div>
 </template>
 
@@ -25,88 +36,164 @@
                 myChart: null,
                 chartData:[],
                 chartLink:[],
+                userList: [],
+                key: '',
             }
         },
         mounted() {
-            this.selectUserRelation()
+            this.selectAllUserRelation();
+            this.getUserList();
         },
         methods: {
             initEchart() {
                 let dom = document.getElementById("container");
                 this.myChart = this.$echarts.init(dom);
+
                 let option = {
-                    tooltip:{
-                        show:false
+                    tooltip: {
+                        formatter: function (x) {
+                            return x.data.lable;
+                        }
                     },
                     series: [
                         {
+                            type: 'graph',
+                            layout: 'force',
+                            symbolSize: 80,
+                            roam: true,
+                            edgeSymbol: ['circle', 'arrow'],
+                            edgeSymbolSize: [4, 10],
                             edgeLabel: {
                                 normal: {
-                                    formatter:"{c}",
-                                    show:true
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: 20
+                                    },
+                                    formatter: function (x) {
+                                        return x.data.lable;
+                                    }
                                 }
                             },
-                            edgeSymbol:'circle',
-                            force:{
-                                repulsion:2000
+                            force: {
+                                repulsion: 2500,
+                                edgeLength: [100, 200],
+                                layoutAnimation: true
                             },
-                            layout:'force',
-                            roam:true,
-                            itemStyle:{
-                                normal:{
-                                    color: 'red'
-                                },
-                                //鼠标放上去有阴影效果
-                                emphasis: {
-                                    shadowColor: '#3721db',
-                                    shadowOffsetX: 0,
-                                    shadowOffsetY: 0,
-                                    shadowBlur: 40,
-                                },
-                            },
-                            label:{
-                                normal:{
-                                    show:true
+                            draggable: true,
+                            itemStyle: {
+                                normal: {
+                                    color: 'green',
+                                    formatter: function (x) {
+                                        return x.data.lable;
+                                    }
                                 }
                             },
                             lineStyle: {
                                 normal: {
-                                    opacity: 0.2,
                                     width: 2,
-                                    curveness: 0,
-                                    color: 'red'
+                                    color: 'red',
+                                    curveness: 0.2,
+                                    formatter: function (x) {
+                                        return x.data.lable;
+                                    }
                                 }
                             },
-                            //头像
-                            symbol: `image://${imgSrc8}`,
-                            symbolSize:50,
-                            type:'graph',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {
+                                    },
+                                    formatter: function (x) {
+                                        return x.data.lable;
+                                    }
+                                }
+                            },
+                            data: this.chartData,
                             links: this.chartLink,
-                            data:this.chartData
+                            legendHoverLink: true,
+                            cursor: 'pointer',
+                            labelLayout: {
+                                moveOverlap: 'shiftX', //在标签重叠的时候是否挪动标签位置以防止重叠。
+                                draggable: true, //标签是否可以允许用户通过拖拽二次调整位置。
+                            },
+                            emphasis: {
+                                scale: true, //是否开启高亮后节点的放大效果。
+                                focus: 'adjacency'
+                            },
                         }
                     ]
                 };
                 this.myChart.setOption(option);
-                this.myChart.on('click', function (params) {
-                });
+                //窗口大小变化时，图表自适应窗口
+                window.onresize = function () {
+                    //this.myChart.resize();
+                }
             },
-            selectUserRelation() {
+
+            selectAllUserRelation() {
+                this.clearData();
                 this.$api.get('/api/userrelation/getUserRelationListAll').then(response => {
                     response.data.users.forEach((item, i)=>{
                         this.chartData.push({
-                            id: item.id,
-                            name: item.name
+                            name: item.id + "",
+                            lable: item.name
                         });
                     });
                     response.data.userRelationVOList.forEach((item, i)=>{
                         this.chartLink.push({
-                            source: item.masterId,
-                            target: item.servantId,
-                            value: item.relationName
+                            source: item.masterId + "",
+                            target: item.servantId + "",
+                            lable: item.relationName,
                         });
                     });
                     this.initEchart();
                 })
+            },
+
+            getUserList() {
+                this.$api.get('/api/user/getAllUserList').then(response => {
+                    this.userList.push({
+                        key: "",
+                        label: "EveryOne ..."
+                    });
+                    response.data.forEach((item)=>{
+                        this.userList.push({
+                            key: item.id,
+                            label: item.name
+                        });
+                    });
+                })
+            },
+
+            selectSomeUserRelation() {
+                this.clearData();
+
+                if (this.key == "") {
+                    this.selectAllUserRelation();
+                    return;
+                }
+
+                this.$api.post('/api/userrelation/getUserRelationListByUser',this.key).then(response => {
+                    response.data.users.forEach((item, i)=>{
+                        this.chartData.push({
+                            name: item.id + "",
+                            lable: item.name
+                        });
+                    });
+                    response.data.userRelationVOList.forEach((item, i)=>{
+                        this.chartLink.push({
+                            source: item.masterId + "",
+                            target: item.servantId + "",
+                            lable: item.relationName,
+                        });
+                    });
+                    this.initEchart();
+                })
+            },
+
+            clearData() {
+                this.chartData = [];
+                this.chartLink = [];
             },
         }
     }
@@ -116,9 +203,12 @@
     .echartLayout {
         margin: auto;
         position: absolute;
-        top: 10%;
+        top: 6%;
         left: 0;
         bottom: 0;
         right: 0;
+        overflow:scroll;
+        overflow-x:hidden;
+        overflow-y:hidden;
     }
 </style>

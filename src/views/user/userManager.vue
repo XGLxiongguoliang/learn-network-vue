@@ -19,11 +19,12 @@
             </el-table-column>
             <el-table-column label="名称" prop="name"></el-table-column>
             <el-table-column label="年龄" prop="age"></el-table-column>
-            <el-table-column width="500">
+            <el-table-column width="800">
                 <template slot="header" slot-scope="scope">
                     <el-input v-model="search" size="mini" style="width:50%;margin-right: 10px" placeholder="输入关键字搜索"/>
                     <el-button type="warning" @click="batchDelete()">批量删除</el-button>
                     <el-button type="success" @click="addUser()">新增</el-button>
+                    <el-button type="success" @click="exportUserList()">下载</el-button>
                 </template>
                 <template slot-scope="scope">
                     <el-button size="mini" @click="editUser(scope.row)">编辑</el-button>
@@ -121,6 +122,30 @@
             addUser() {
                 this.outerVisible = true;
             },
+            exportUserList() {
+                console.log("xxxxxxxxxxxxxxxxxxxxxxxx")
+                this.$api({
+                    method: 'GET',
+                    url: '/api/user/exportUserList',
+                    //params: param,
+                    responseType: 'blob'
+                }).then(res => {
+                    let blob = new Blob([res.data], {
+                        // 这里一定要和后端对应，不然可能出现乱码或者打不开文件
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                        //type: "application/vnd.ms-excel;charset=utf-8"
+                    });
+                    let url = window.URL.createObjectURL(blob);
+                    let link = document.createElement('a')
+                    link.href = window.URL.createObjectURL(blob)
+                    link.download = "用户列表.xlsx"
+                    link.click();
+                    //释放内存
+                    window.URL.revokeObjectURL(link.href)
+                }).catch(err=>{
+                    console.log(err)
+                })
+            },
             editUser(row) {
                 this.outerVisible =true;
                 this.form.id = row.id;
@@ -154,7 +179,7 @@
             indexMethod(index)
             {
                 return index + 1;
-            }
+            },
         },
         mounted () {
             this.getAllUser();
