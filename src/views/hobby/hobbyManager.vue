@@ -50,7 +50,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="outerVisible = false">取 消</el-button>
+                <el-button @click="outerVisible = false">取消</el-button>
                 <el-button type="primary" @click="addHobbyForm()">确认</el-button>
             </div>
         </el-dialog>
